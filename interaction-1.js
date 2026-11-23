@@ -55,22 +55,31 @@ function accelerationChange(accx, accy, accz) {
     // playAudio()
 }
 
-function rotationChange(rotx, roty, rotz) {
-    let margin = sliders[2].value();
-    let now = millis();
-    const totalXY = Math.abs(rotx) + Math.abs(roty);
+// -1 vänster och 1 höger, 0 i mitten
+let prevTilt = 0;
+let prevTime = 0;
+const minTimeBetween = 500;
+const tiltTrig = 20;
 
-    if (totalXY < margin) {
-        if (now - previousTime >= minTimeBetween) {
-            previousTime = now;
-            // playAudio();
-            statusLabels[2].style("color", "pink");
-            movetimer = now;
-        }
-    } else {
-        statusLabels[2].style("color", "black"); 
+function rotationChange(rotx, roty, rotz) {
+    const now = millis();
+    let currentTilt = 0;
+    if (roty > tiltTrig)
+        currentTilt = 1;
+    else if (roty < -tiltTrig)
+        currentTilt = -1;
+    if (currentTilt !== 0 && currentTilt !== prevTilt && now - prevTime > minTimeBetween) {
+        prevTime = now;
+        turntimer = now;
+        if(currentTilt === -1)
+            statusLabels[0].style("color", "pink");
+        if(currentTilt === 1)
+            statusLabels[0].style("color", "red");
+        playAudio(currentTilt);
     }
+    prevTilt = currentTilt;
 }
+
 
 function mousePressed() {
     playAudio()
@@ -108,7 +117,7 @@ function getMinMaxParam(address) {
 //
 //==========================================================================================
 
-function playAudio() {
+function playAudio(currentTilt = 1) {
     if (!dspNode) {
         return;
     }
@@ -119,7 +128,12 @@ function playAudio() {
     // them printed on the console of your browser when you load the page)
     // For example if you change to a bell sound, here you could use "/churchBell/gate" instead of
     // "/thunder/rumble".
-    dspNode.setParamValue("/windchimes/wind_chimes/wind", 1.5)
+    if (currentTilt === -1) {
+        dspNode.setParamValue("/windchimes/wind_chimes/wind", 0.5)
+    }
+    if (currentTilt === 1) {
+        dspNode.setParamValue("/windchimes/wind_chimes/wind", 1.5)
+    }
     setTimeout(() => { dspNode.setParamValue("/windchimes/wind_chimes/wind", 0) }, 1000);
 }
 
