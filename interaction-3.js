@@ -51,15 +51,27 @@ brass.createDSP(audioContext, 1024)
 //
 //==========================================================================================
 
+const minTimeBetween = 1000;
+const margin = 1;
+let previousTime = 0;
 function accelerationChange(accx, accy, accz) {
     // playAudio()
+    let now = millis()
+    const totalXY = Math.abs(accx) + Math.abs(accy)
+    if(totalXY < margin){
+        if(now - previousTime <= minTimeBetween){
+            previousTime = now;
+            playAudio()
+        }
+
+    }
 }
 
 function rotationChange(rotx, roty, rotz) {
 }
 
 function mousePressed() {
-    playAudio(mouseX/windowWidth)
+    playAudio(mouseX / windowWidth)
     // Use this for debugging from the desktop!
 }
 
