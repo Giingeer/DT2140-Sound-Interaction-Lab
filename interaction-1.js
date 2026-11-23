@@ -64,22 +64,22 @@ const tiltTrig = 20;
 function rotationChange(rotx, roty, rotz) {
     const now = millis();
     let currentTilt = 0;
-    if (roty > tiltTrig)
+    if (roty > tiltTrig) {
         currentTilt = 1;
-    else if (roty < -tiltTrig)
+        statusLabels[1].style("color", "red");
+    }
+    else if (roty < -tiltTrig) {
         currentTilt = -1;
-    if (currentTilt !== 0 && currentTilt !== prevTilt && now - prevTime > minTimeBetween) {
-        prevTime = now;
-        turntimer = now;
-        if (currentTilt === -1)
-            statusLabels[1].style("color", "pink");
-        else if (currentTilt === 1)
-            statusLabels[1].style("color", "red");
+        statusLabels[1].style("color", "pink");
     }
     else {
         statusLabels[1].style("color", "black");
-        playAudio(currentTilt);
     }
+    if (currentTilt !== 0 && currentTilt !== prevTilt && now - prevTime > minTimeBetween) {
+        prevTime = now;
+        turntimer = now;
+    }
+    playAudio(currentTilt);
     prevTilt = currentTilt;
 }
 
@@ -90,11 +90,11 @@ function mousePressed() {
 }
 
 function deviceMoved() {
-    statusLabels[2].style("color", "pink");
+    // statusLabels[2].style("color", "pink");
 }
 
 function deviceTurned() {
-    threshVals[1] = turnAxis;
+    // threshVals[1] = turnAxis;
 }
 function deviceShaken() {
     shaketimer = millis();

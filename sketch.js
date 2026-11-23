@@ -14,7 +14,7 @@ let threshVals = [0, " ", 0];
 let labels = ["", "Acceleration X", "Acceleration Y", "Acceleration Z", "", "Rotation X", "Rotation Y", "Rotation Z"];
 let labelIDs = ["", "accx", "accy", "accz", "", "rotX", "rotY", "rotZ"];
 let vals = [];
-let stateLabels = ["shaken", "turned", "still"];
+let stateLabels = ["shaken", "side-to-side", "still"];
 let buttons = [];
 let buttonWidth;
 let buttonLabels = ["Turn On DSP", "Request Permission"];
