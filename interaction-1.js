@@ -122,19 +122,16 @@ function playAudio(tiltState = 0) {
         return;
     }
     if (tiltState === -1) {
-        setOutputConnected(true);
         dspNode.setParamValue("/windchimes/wind_chimes/wind", 0.35);
         dspNode.setParamValue("/windchimes/volume", 0.5);
         dspNode.setParamValue("/windchimes/Freeverb/Wet", 0.05);
     } else if (tiltState === 1) {
-        setOutputConnected(true);
         dspNode.setParamValue("/windchimes/wind_chimes/wind", 2.0);
         dspNode.setParamValue("/windchimes/volume", 0.9);
         dspNode.setParamValue("/windchimes/Freeverb/Wet", 0.9);
     } else {
         dspNode.setParamValue("/windchimes/wind_chimes/wind", 0);
         dspNode.setParamValue("/windchimes/volume", 0);
-        setOutputConnected(false);
     }
 }
 
