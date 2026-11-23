@@ -51,15 +51,20 @@ bells.createDSP(audioContext, 1024)
 //
 //==========================================================================================
 
+let maxShakeForce = 0;
+
 function accelerationChange(accx, accy, accz) {
-    // playAudio()
+    const totalForce = Math.sqrt(accx * accx + accy * accy + accz * accz);
+    if (totalForce > maxShakeForce) {
+        maxShakeForce = totalForce;
+    }
 }
 
 function rotationChange(rotx, roty, rotz) {
 }
 
 function mousePressed() {
-    // playAudio()
+    playAudio(15);
     // Use this for debugging from the desktop!
 }
 
@@ -71,11 +76,14 @@ function deviceMoved() {
 function deviceTurned() {
     threshVals[1] = turnAxis;
 }
+
 function deviceShaken() {
     shaketimer = millis();
     statusLabels[0].style("color", "pink");
-    playAudio();
+    playAudio(maxShakeForce);
+    maxShakeForce = 0;
 }
+
 
 function getMinMaxParam(address) {
     const exampleMinMaxParam = findByAddress(dspNodeParams, address);
