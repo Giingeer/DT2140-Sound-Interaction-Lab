@@ -25,19 +25,14 @@ if (typeof module === "undefined") {
 }
 
 // The name should be the same as the WASM file, so change windchimes with brass if you use brass.wasm
-windchimes.createDSP(audioContext, 1024)
+fire.createDSP(audioContext, 1024)
     .then(node => {
         dspNode = node;
         dspNode.connect(audioContext.destination);
         console.log('params: ', dspNode.getParams());
         const jsonString = dspNode.getJSON();
         jsonParams = JSON.parse(jsonString)["ui"][0]["items"];
-        dspNodeParams = jsonParams
-        console.log(jsonParams)
-        // const exampleMinMaxParam = findByAddress(dspNodeParams, "/thunder/rumble");
-        // // ALWAYS PAY ATTENTION TO MIN AND MAX, ELSE YOU MAY GET REALLY HIGH VOLUMES FROM YOUR SPEAKERS
-        // const [exampleMinValue, exampleMaxValue] = getParamMinMax(exampleMinMaxParam);
-        // console.log('Min value:', exampleMinValue, 'Max value:', exampleMaxValue);
+        dspNodeParams = jsonParams;
     });
 
 
@@ -123,6 +118,12 @@ function getMinMaxParam(address) {
 //==========================================================================================
 
 function playAudio(tiltState = 0) {
+    if (!dspNode) {
+        return;
+    }
+    if (audioContext.state === 'suspended') {
+        return;
+    }
     if (tiltState === -1) {
         setOutputConnected(true);
         dspNode.setParamValue("/windchimes/wind_chimes/wind", 0.35);
