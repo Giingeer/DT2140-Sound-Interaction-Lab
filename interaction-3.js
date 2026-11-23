@@ -52,7 +52,7 @@ fire.createDSP(audioContext, 1024)
 //==========================================================================================
 
 const minTimeBetween = 1000;
-const margin = sliders[2];
+const margin = sliders[2].value();
 let previousTime = 0;
 function accelerationChange(accx, accy, accz) {
     // playAudio()
@@ -87,7 +87,7 @@ function deviceTurned() {
 function deviceShaken() {
     shaketimer = millis();
     statusLabels[0].style("color", "pink");
-    playAudio();
+    // playAudio();
 }
 
 function getMinMaxParam(address) {
