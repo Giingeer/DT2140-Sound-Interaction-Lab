@@ -121,15 +121,19 @@ function getMinMaxParam(address) {
 //==========================================================================================
 
 function playAudio(tiltState = 0) {
-    const wind = "/windchimes/wind_chimes/wind"; // verify exact address in console
+    const wind = "/windchimes/wind_chimes/wind";
+    const vol = "/volume";
 
-    if (tiltState === -1) {
-        dspNode.setParamValue(wind, 0.4);
-    } else if (tiltState === 1) {
-        dspNode.setParamValue(wind, 1.6);
-    } else {
-        dspNode.setParamValue(wind, 0);
-    }
+  if (tiltState === -1) {
+    dspNode.setParamValue(wind, 0.35);
+    dspNode.setParamValue(vol, 0.35);
+  } else if (tiltState === 1) {
+    dspNode.setParamValue(wind, 1.85);
+    dspNode.setParamValue(vol, 0.85);
+  } else {
+    dspNode.setParamValue(wind, 0);
+    dspNode.setParamValue(vol, 0);
+  }
 }
 
 //==========================================================================================
