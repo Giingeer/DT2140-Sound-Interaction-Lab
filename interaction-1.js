@@ -71,10 +71,12 @@ function rotationChange(rotx, roty, rotz) {
     if (currentTilt !== 0 && currentTilt !== prevTilt && now - prevTime > minTimeBetween) {
         prevTime = now;
         turntimer = now;
-        if(currentTilt === -1)
+        if (currentTilt === -1)
             statusLabels[0].style("color", "pink");
-        if(currentTilt === 1)
+        if (currentTilt === 1)
             statusLabels[0].style("color", "red");
+        else
+            statusLabels[0].style("color", "black");
         playAudio(currentTilt);
     }
     prevTilt = currentTilt;
@@ -134,7 +136,7 @@ function playAudio(currentTilt = 1) {
     if (currentTilt === 1) {
         dspNode.setParamValue("/windchimes/wind_chimes/wind", 1.5)
     }
-    setTimeout(() => { dspNode.setParamValue("/windchimes/wind_chimes/wind", 0) }, 1000);
+    // setTimeout(() => { dspNode.setParamValue("/windchimes/wind_chimes/wind", 0) }, 1000);
 }
 
 //==========================================================================================
