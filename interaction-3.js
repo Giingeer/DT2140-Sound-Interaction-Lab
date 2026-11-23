@@ -32,11 +32,7 @@ fire.createDSP(audioContext, 1024)
         console.log('params: ', dspNode.getParams());
         const jsonString = dspNode.getJSON();
         jsonParams = JSON.parse(jsonString)["ui"][0]["items"];
-        dspNodeParams = jsonParams
-        // const exampleMinMaxParam = findByAddress(dspNodeParams, "/thunder/rumble");
-        // // ALWAYS PAY ATTENTION TO MIN AND MAX, ELSE YOU MAY GET REALLY HIGH VOLUMES FROM YOUR SPEAKERS
-        // const [exampleMinValue, exampleMaxValue] = getParamMinMax(exampleMinMaxParam);
-        // console.log('Min value:', exampleMinValue, 'Max value:', exampleMaxValue);
+        dspNodeParams = jsonParams;
     });
 
 
@@ -62,7 +58,6 @@ function rotationChange(rotx, roty, rotz) {
     const margin = (typeof sliders !== "undefined" && sliders[2]) ? sliders[2].value() : 15;
     const totalXY = Math.abs(rotx) + Math.abs(roty);
 
-    // Trigger when tilted BEYOND margin (>), not while sitting flat (<)
     if (totalXY > margin) {
         if (now - previousTime >= minTimeBetween) {
             previousTime = now;
@@ -118,17 +113,20 @@ function playAudio(isWet = 1) {
         return;
     }
 
-    // Replace these strings with the exact 3 parameter paths from params: Array(3)
-    // Always verify min/max with getMinMaxParam("/your/address") first!
-    dspNode.setParamValue("/fire/gain", 0.8);
+    // Ignite the fire, set volume (0 to 1), and turn on wet-wood crackling
+    dspNode.setParamValue("/fire/gate", 1);
+    dspNode.setParamValue("/fire/volume", 0.8);
     dspNode.setParamValue("/fire/wet", isWet);
 
+    // Cancel any previous timer so rapid shakes/tilts don't cut the sound short
     if (wetTimeout) {
         clearTimeout(wetTimeout);
     }
 
+    // Turn off wet crackling and close the fire gate after 1.5 seconds (1500 ms)
     wetTimeout = setTimeout(() => {
         dspNode.setParamValue("/fire/wet", 0);
+        dspNode.setParamValue("/fire/gate", 0);
     }, 1500);
 }
 //==========================================================================================
