@@ -68,7 +68,7 @@ function rotationChange(rotx, roty, rotz) {
 }
 
 function mousePressed() {
-    playAudio(15);
+    playAudio(mouseX / windowWidth);
     // Use this for debugging from the desktop!
 }
 
