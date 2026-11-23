@@ -147,9 +147,9 @@ function draw() {
   if (millis() - shaketimer > 1000) { 
     statusLabels[0].style("color", "black");
   }
-  if (millis() - turntimer > 1000) { 
-    statusLabels[1].style("color", "black");
-  }
+  // if (millis() - turntimer > 1000) { 
+  //   statusLabels[1].style("color", "black");
+  // }
   if (millis() - movetimer > 1000) {
     statusLabels[2].style("color", "black");
   }
