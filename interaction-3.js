@@ -50,10 +50,10 @@ fire.createDSP(audioContext, 1024)
 //------------------------------------------------------------------------------------------
 //
 //==========================================================================================
-
 const minTimeBetween = 1000;
 let previousTime = 0;
- 
+let wetTimeout = null;
+
 function accelerationChange(accx, accy, accz) {
 }
 
@@ -62,12 +62,12 @@ function rotationChange(rotx, roty, rotz) {
     const margin = (typeof sliders !== "undefined" && sliders[2]) ? sliders[2].value() : 15;
     const totalXY = Math.abs(rotx) + Math.abs(roty);
 
-    if (totalXY < margin) {
+    // Trigger when tilted BEYOND margin (>), not while sitting flat (<)
+    if (totalXY > margin) {
         if (now - previousTime >= minTimeBetween) {
             previousTime = now;
             playAudio(1);
             statusLabels[2].style("color", "pink");
-            movetimer = now;
         }
     } else {
         statusLabels[2].style("color", "black");
@@ -80,7 +80,7 @@ function mousePressed() {
 }
 
 function deviceMoved() {
-    // statusLabels[2].style("color", "pink");
+    movetimer = millis();
 }
 
 function deviceTurned() {
@@ -95,10 +95,9 @@ function deviceShaken() {
 
 function getMinMaxParam(address) {
     const exampleMinMaxParam = findByAddress(dspNodeParams, address);
-    // ALWAYS PAY ATTENTION TO MIN AND MAX, ELSE YOU MAY GET REALLY HIGH VOLUMES FROM YOUR SPEAKERS
     const [exampleMinValue, exampleMaxValue] = getParamMinMax(exampleMinMaxParam);
     console.log('Min value:', exampleMinValue, 'Max value:', exampleMaxValue);
-    return [exampleMinValue, exampleMaxValue]
+    return [exampleMinValue, exampleMaxValue];
 }
 
 //==========================================================================================
@@ -122,8 +121,13 @@ function playAudio(isWet = 1) {
     // Turn on wet-wood crackling/popping (1 = wet popping, 0 = steady dry fire)
     dspNode.setParamValue("/fire/wet", isWet);
 
+    // Cancel any previous timer so rapid shakes/tilts don't cut the popping short
+    if (wetTimeout) {
+        clearTimeout(wetTimeout);
+    }
+
     // Return to steady dry fire after 1.5 seconds (1500 ms)
-    setTimeout(() => {
+    wetTimeout = setTimeout(() => {
         dspNode.setParamValue("/fire/wet", 0);
     }, 1500);
 }
