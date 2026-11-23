@@ -75,8 +75,9 @@ function rotationChange(rotx, roty, rotz) {
             statusLabels[1].style("color", "pink");
         else if (currentTilt === 1)
             statusLabels[1].style("color", "red");
-        else
-            statusLabels[1].style("color", "black");
+    }
+    else {
+        statusLabels[1].style("color", "black");
         playAudio(currentTilt);
     }
     prevTilt = currentTilt;
@@ -119,24 +120,16 @@ function getMinMaxParam(address) {
 //
 //==========================================================================================
 
-function playAudio(currentTilt = 1) {
-    if (!dspNode) {
-        return;
+function playAudio(tiltState = 0) {
+    const wind = "/windchimes/wind_chimes/wind"; // verify exact address in console
+
+    if (tiltState === -1) {
+        dspNode.setParamValue(wind, 0.4);
+    } else if (tiltState === 1) {
+        dspNode.setParamValue(wind, 1.6);
+    } else {
+        dspNode.setParamValue(wind, 0);
     }
-    if (audioContext.state === 'suspended') {
-        return;
-    }
-    // Edit here the addresses ("/thunder/rumble") depending on your WASM controls (you can see 
-    // them printed on the console of your browser when you load the page)
-    // For example if you change to a bell sound, here you could use "/churchBell/gate" instead of
-    // "/thunder/rumble".
-    if (currentTilt === -1) {
-        dspNode.setParamValue("/brass/brass")
-    }
-    if (currentTilt === 1) {
-        dspNode.setParamValue("/brass/brass")
-    }
-    // setTimeout(() => { dspNode.setParamValue("/windchimes/wind_chimes/wind", 0) }, 1000);
 }
 
 //==========================================================================================
