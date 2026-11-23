@@ -52,27 +52,27 @@ fire.createDSP(audioContext, 1024)
 //==========================================================================================
 
 const minTimeBetween = 1000;
-const margin = sliders[2];
 let previousTime = 0;
+ 
 function accelerationChange(accx, accy, accz) {
-    // playAudio()
 }
 
 function rotationChange(rotx, roty, rotz) {
-    let now = millis()
-    const totalXY = Math.abs(rotx) + Math.abs(roty)
-    if(totalXY < margin){
-        if(now - previousTime <= minTimeBetween){
+    let now = millis();
+    const margin = (typeof sliders !== "undefined" && sliders[2]) ? sliders[2].value() : 15;
+    const totalXY = Math.abs(rotx) + Math.abs(roty);
+
+    if (totalXY < margin) {
+        if (now - previousTime >= minTimeBetween) {
             previousTime = now;
-            playAudio()
+            playAudio(1);
             statusLabels[2].style("color", "pink");
         }
-
     }
 }
 
 function mousePressed() {
-    playAudio(mouseX / windowWidth)
+    playAudio(1);
     // Use this for debugging from the desktop!
 }
 
@@ -84,10 +84,11 @@ function deviceMoved() {
 function deviceTurned() {
     threshVals[1] = turnAxis;
 }
+
 function deviceShaken() {
     shaketimer = millis();
     statusLabels[0].style("color", "pink");
-    playAudio();
+    playAudio(1);
 }
 
 function getMinMaxParam(address) {
@@ -108,17 +109,21 @@ function getMinMaxParam(address) {
 //
 //==========================================================================================
 
-function playAudio(pressure = 0.5) {
+function playAudio(isWet = 1) {
     if (!dspNode) {
         return;
     }
     if (audioContext.state === 'suspended') {
         return;
     }
-    console.log(pressure);
-    // Replace "/fire/YOUR_PARAM" with the exact "address" from dsp-meta.json
-    // and ensure the value fits between its min and max
-    dspNode.setParamValue("/fire/fire_size", pressure);
+
+    // Turn on wet-wood crackling/popping (1 = wet popping, 0 = steady dry fire)
+    dspNode.setParamValue("/fire/wet", isWet);
+
+    // Return to steady dry fire after 1.5 seconds (1500 ms)
+    setTimeout(() => {
+        dspNode.setParamValue("/fire/wet", 0);
+    }, 1500);
 }
 //==========================================================================================
 // END
