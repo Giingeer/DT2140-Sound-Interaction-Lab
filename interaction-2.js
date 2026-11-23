@@ -10,6 +10,7 @@
 let dspNode = null;
 let dspNodeParams = null;
 let jsonParams = null;
+let masterGain = null;
 
 // Change here to ("tuono") depending on your wasm file name
 const dspName = "bells";
@@ -24,20 +25,22 @@ if (typeof module === "undefined") {
     module.exports = exp;
 }
 
-// The name should be the same as the WASM file, so change tuono with brass if you use brass.wasm
+
+
 bells.createDSP(audioContext, 1024)
     .then(node => {
         dspNode = node;
-        dspNode.connect(audioContext.destination);
+        masterGain = audioContext.createGain();
+        masterGain.gain.value = 0.5;
+        dspNode.connect(masterGain);
+        masterGain.connect(audioContext.destination);
+
         console.log('params: ', dspNode.getParams());
         const jsonString = dspNode.getJSON();
         jsonParams = JSON.parse(jsonString)["ui"][0]["items"];
-        dspNodeParams = jsonParams
-        // const exampleMinMaxParam = findByAddress(dspNodeParams, "/thunder/rumble");
-        // // ALWAYS PAY ATTENTION TO MIN AND MAX, ELSE YOU MAY GET REALLY HIGH VOLUMES FROM YOUR SPEAKERS
-        // const [exampleMinValue, exampleMaxValue] = getParamMinMax(exampleMinMaxParam);
-        // console.log('Min value:', exampleMinValue, 'Max value:', exampleMaxValue);
+        dspNodeParams = jsonParams;
     });
+
 
 
 //==========================================================================================
@@ -80,10 +83,15 @@ function deviceTurned() {
 function deviceShaken() {
     shaketimer = millis();
     statusLabels[0].style("color", "pink");
-    playAudio(maxShakeForce);
-    maxShakeForce = 0;
-}
 
+    // Calculate shake delta directly from p5.js built-in acceleration variables
+    const dx = Math.abs(accelerationX - pAccelerationX);
+    const dy = Math.abs(accelerationY - pAccelerationY);
+    const dz = Math.abs(accelerationZ - pAccelerationZ);
+    const shakeForce = Math.sqrt(dx * dx + dy * dy + dz * dz);
+
+    playAudio(shakeForce);
+}
 
 
 //==========================================================================================
@@ -97,26 +105,28 @@ function deviceShaken() {
 //==========================================================================================
 
 function playAudio(shakeForce = 15) {
-    if (!dspNode) {
+    if (!dspNode || !masterGain) {
         return;
-  }
+    }
     if (audioContext.state === 'suspended') {
         return;
     }
 
-    // Map shake force (roughly 5 for light shake up to 35 for hard shake) to volume (0.1 to 1.0)
-    // p5.js constrain() and map() keep the volume safely within [0.1, 1.0]
-    const volume = constrain(map(shakeForce, 1, 10, 0.1, 1.0), 0.1, 1.0);
+    // p5.js shake threshold defaults to 30 (sum of deltas), so shakeForce typically ranges from ~15 (light) to ~60+ (hard)
+    const volume = constrain(map(shakeForce, 15, 60, 0.02, 2.0), 0.02, 2.0);
 
-    // Check your browser console's 'params:' log to verify whether bells.wasm uses
-    // "/englishBell/gain", "/englishBell/volume", or "/englishBell/strikeSharpness"
-    dspNode.setParamValue("/englishBell/gain", volume);
+    // Show the live force & volume in the status label on your phone screen!
+    if (statusLabels && statusLabels[0]) {
+        statusLabels[0].html("Shake force: " + Math.round(shakeForce) + " | Vol: " + volume.toFixed(2));
+    }
+
+    // Apply volume directly to the Web Audio GainNode
+    masterGain.gain.setValueAtTime(volume, audioContext.currentTime);
 
     // Trigger the bell
     dspNode.setParamValue("/englishBell/gate", 1);
     setTimeout(() => { dspNode.setParamValue("/englishBell/gate", 0) }, 100);
 }
-
 //==========================================================================================
 // END
 //==========================================================================================
