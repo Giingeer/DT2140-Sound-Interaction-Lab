@@ -59,19 +59,18 @@ function accelerationChange(accx, accy, accz) {
 
 function rotationChange(rotx, roty, rotz) {
     let margin = sliders[2].value();
-    let now = millis()
-    const totalXY = Math.abs(rotx) + Math.abs(roty)
-    console.log("totalXY = ", totalXY)
-    console.log("rotX = ", rotx)
-    console.log("roty = ", roty)
-    if(totalXY < margin){
-        if(now - previousTime <= minTimeBetween){
+    let now = millis();
+    const totalXY = Math.abs(rotx) + Math.abs(roty);
+
+    if (totalXY < margin) {
+        if (now - previousTime >= minTimeBetween) {
             previousTime = now;
-            playAudio()
+            playAudio();
             statusLabels[2].style("color", "pink");
             movetimer = now;
         }
-
+    } else {
+        statusLabels[2].style("color", "black"); 
     }
 }
 
