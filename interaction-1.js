@@ -12,7 +12,7 @@ let dspNodeParams = null;
 let jsonParams = null;
 
 // Change here to ("windchimes") depending on your wasm file name
-const dspName = "windchimes";
+const dspName = "brass";
 const instance = new FaustWasm2ScriptProcessor(dspName);
 
 // output to window or npm package module
@@ -25,7 +25,7 @@ if (typeof module === "undefined") {
 }
 
 // The name should be the same as the WASM file, so change windchimes with brass if you use brass.wasm
-windchimes.createDSP(audioContext, 1024)
+brass.createDSP(audioContext, 1024)
     .then(node => {
         dspNode = node;
         dspNode.connect(audioContext.destination);
@@ -73,7 +73,7 @@ function rotationChange(rotx, roty, rotz) {
         turntimer = now;
         if (currentTilt === -1)
             statusLabels[1].style("color", "pink");
-        if (currentTilt === 1)
+        else if (currentTilt === 1)
             statusLabels[1].style("color", "red");
         else
             statusLabels[1].style("color", "black");
@@ -131,10 +131,10 @@ function playAudio(currentTilt = 1) {
     // For example if you change to a bell sound, here you could use "/churchBell/gate" instead of
     // "/thunder/rumble".
     if (currentTilt === -1) {
-        dspNode.setParamValue("/windchimes/wind_chimes/wind", 0.5)
+        dspNode.setParamValue("/brass/brass")
     }
     if (currentTilt === 1) {
-        dspNode.setParamValue("/windchimes/wind_chimes/wind", 1.5)
+        dspNode.setParamValue("/brass/brass")
     }
     // setTimeout(() => { dspNode.setParamValue("/windchimes/wind_chimes/wind", 0) }, 1000);
 }
