@@ -83,10 +83,15 @@ function deviceTurned() {
 function deviceShaken() {
     shaketimer = millis();
     statusLabels[0].style("color", "pink");
-    playAudio(maxShakeForce);
-    maxShakeForce = 0;
-}
 
+    // Calculate shake delta directly from p5.js built-in acceleration variables
+    const dx = Math.abs(accelerationX - pAccelerationX);
+    const dy = Math.abs(accelerationY - pAccelerationY);
+    const dz = Math.abs(accelerationZ - pAccelerationZ);
+    const shakeForce = Math.sqrt(dx * dx + dy * dy + dz * dz);
+
+    playAudio(shakeForce);
+}
 
 
 //==========================================================================================
@@ -99,8 +104,7 @@ function deviceShaken() {
 //
 //==========================================================================================
 
-
-function playAudio(shakeForce = 5) {
+function playAudio(shakeForce = 15) {
     if (!dspNode || !masterGain) {
         return;
     }
@@ -108,21 +112,21 @@ function playAudio(shakeForce = 5) {
         return;
     }
 
-    // Calibrated for p5.js delta acceleration (1 = gentle shake, 12 = hard shake)
-    const volume = constrain(map(shakeForce, 1, 12, 0.05, 1.5), 0.05, 1.5);
-    console.log("Shake force:", shakeForce.toFixed(2), "-> Volume:", volume.toFixed(2));
+    // p5.js shake threshold defaults to 30 (sum of deltas), so shakeForce typically ranges from ~15 (light) to ~60+ (hard)
+    const volume = constrain(map(shakeForce, 15, 60, 0.02, 2.0), 0.02, 2.0);
+
+    // Show the live force & volume in the status label on your phone screen!
+    if (statusLabels && statusLabels[0]) {
+        statusLabels[0].html("Shake force: " + Math.round(shakeForce) + " | Vol: " + volume.toFixed(2));
+    }
 
     // Apply volume directly to the Web Audio GainNode
     masterGain.gain.setValueAtTime(volume, audioContext.currentTime);
-
-    // Also try setting gain/sharpness on the bell DSP if supported
-    dspNode.setParamValue("/englishBell/gain", constrain(volume, 0.05, 1.0));
 
     // Trigger the bell
     dspNode.setParamValue("/englishBell/gate", 1);
     setTimeout(() => { dspNode.setParamValue("/englishBell/gate", 0) }, 100);
 }
-
 //==========================================================================================
 // END
 //==========================================================================================
