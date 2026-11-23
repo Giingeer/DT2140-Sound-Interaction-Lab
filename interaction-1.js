@@ -11,6 +11,12 @@ let dspNode = null;
 let dspNodeParams = null;
 let jsonParams = null;
 
+// -1 vänster och 1 höger, 0 i mitten
+let prevTilt = 0;
+let prevTime = 0;
+const minTimeBetween = 500;
+const tiltTrig = 20;
+
 // Change here to ("windchimes") depending on your wasm file name
 const dspName = "windchimes";
 const instance = new FaustWasm2ScriptProcessor(dspName);
@@ -25,7 +31,7 @@ if (typeof module === "undefined") {
 }
 
 // The name should be the same as the WASM file, so change windchimes with brass if you use brass.wasm
-fire.createDSP(audioContext, 1024)
+windchimes.createDSP(audioContext, 1024)
     .then(node => {
         dspNode = node;
         dspNode.connect(audioContext.destination);
@@ -50,12 +56,6 @@ fire.createDSP(audioContext, 1024)
 function accelerationChange(accx, accy, accz) {
     // playAudio()
 }
-
-// -1 vänster och 1 höger, 0 i mitten
-let prevTilt = 0;
-let prevTime = 0;
-const minTimeBetween = 500;
-const tiltTrig = 20;
 
 function rotationChange(rotx, roty, rotz) {
     const now = millis();
@@ -118,19 +118,19 @@ function getMinMaxParam(address) {
 //==========================================================================================
 
 function playAudio(tiltState = 0) {
-    if (!dspNode || typeof audioContext === "undefined" || audioContext.state === "suspended") {
+    if (!dspNode || audioContext.state === "suspended") {
         return;
     }
     if (tiltState === -1) {
         setOutputConnected(true);
         dspNode.setParamValue("/windchimes/wind_chimes/wind", 0.35);
         dspNode.setParamValue("/windchimes/volume", 0.5);
-        // dspNode.setParamValue("/windchimes/Freeverb/Wet", 0.05);
+        dspNode.setParamValue("/windchimes/Freeverb/Wet", 0.05);
     } else if (tiltState === 1) {
         setOutputConnected(true);
         dspNode.setParamValue("/windchimes/wind_chimes/wind", 2.0);
         dspNode.setParamValue("/windchimes/volume", 0.9);
-        // dspNode.setParamValue("/windchimes/Freeverb/Wet", 0.9);
+        dspNode.setParamValue("/windchimes/Freeverb/Wet", 0.9);
     } else {
         dspNode.setParamValue("/windchimes/wind_chimes/wind", 0);
         dspNode.setParamValue("/windchimes/volume", 0);
