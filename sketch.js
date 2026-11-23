@@ -14,7 +14,7 @@ let threshVals = [0, " ", 0];
 let labels = ["", "Acceleration X", "Acceleration Y", "Acceleration Z", "", "Rotation X", "Rotation Y", "Rotation Z"];
 let labelIDs = ["", "accx", "accy", "accz", "", "rotX", "rotY", "rotZ"];
 let vals = [];
-let stateLabels = ["shaken", "turned", "moved"];
+let stateLabels = ["shaken", "turned", "still"];
 let buttons = [];
 let buttonWidth;
 let buttonLabels = ["Turn On DSP", "Request Permission"];
@@ -80,7 +80,7 @@ function setup() {
 
   statusLabels[2] = createP(stateLabels[2] );
   statusLabels[2].parent(statBox.elt);
-  statusLabels[2].id("moved");
+  statusLabels[2].id("still");
 
   //init sliders
   let dSlider1 = createDiv();
@@ -100,10 +100,10 @@ function setup() {
   dSlider2.id("slider2");
   dSlider2.parent(statBox.elt);
 
-  sliders[3] = createP("move threshold");
+  sliders[3] = createP("still threshold");
   sliders[3].parent(dSlider2.elt);
 
-  sliders[2] = createSlider(0, 75, 50, 1); //move thresh, 0 - 75, default = 50, step = 1
+  sliders[2] = createSlider(0, 2, 1, 0.2); //still thresh, 0 - 75, default = 50, step = 1
 ///  sliders[2].size(sliderWidth);
   sliders[2].parent(dSlider2.elt);
   sliders[2].style('position', 'unset');

@@ -51,21 +51,34 @@ fire.createDSP(audioContext, 1024)
 //
 //==========================================================================================
 
+const minTimeBetween = 1000;
+const margin = sliders[2];
+let previousTime = 0;
 function accelerationChange(accx, accy, accz) {
     // playAudio()
 }
 
 function rotationChange(rotx, roty, rotz) {
+    let now = millis()
+    const totalXY = Math.abs(rotx) + Math.abs(roty)
+    if(totalXY < margin){
+        if(now - previousTime <= minTimeBetween){
+            previousTime = now;
+            playAudio()
+            statusLabels[2].style("color", "pink");
+        }
+
+    }
 }
 
 function mousePressed() {
-    playAudio(mouseX/windowWidth)
+    playAudio(mouseX / windowWidth)
     // Use this for debugging from the desktop!
 }
 
 function deviceMoved() {
     movetimer = millis();
-    statusLabels[2].style("color", "pink");
+    // statusLabels[2].style("color", "pink");
 }
 
 function deviceTurned() {
