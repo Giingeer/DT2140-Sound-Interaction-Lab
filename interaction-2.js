@@ -30,6 +30,7 @@ if (typeof module === "undefined") {
 bells.createDSP(audioContext, 1024)
     .then(node => {
         dspNode = node;
+        dspNode.disconnect();
         masterGain = audioContext.createGain();
         masterGain.gain.value = 0.5;
         dspNode.connect(masterGain);
