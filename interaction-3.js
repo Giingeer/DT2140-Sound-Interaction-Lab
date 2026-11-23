@@ -69,6 +69,8 @@ function rotationChange(rotx, roty, rotz) {
             statusLabels[2].style("color", "pink");
             movetimer = now;
         }
+    } else {
+        statusLabels[2].style("color", "black");
     }
 }
 

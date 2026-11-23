@@ -30,6 +30,7 @@ if (typeof module === "undefined") {
 bells.createDSP(audioContext, 1024)
     .then(node => {
         dspNode = node;
+        dspNode.disconnect();
         masterGain = audioContext.createGain();
         masterGain.gain.value = 0.5;
         dspNode.connect(masterGain);
@@ -55,6 +56,8 @@ bells.createDSP(audioContext, 1024)
 //==========================================================================================
 
 let maxShakeForce = 0;
+const minTimeBetween = 300;
+let previousTime = 0;
 
 function accelerationChange(accx, accy, accz) {
     const totalForce = Math.sqrt(accx * accx + accy * accy + accz * accz);
@@ -67,12 +70,12 @@ function rotationChange(rotx, roty, rotz) {
 }
 
 function mousePressed() {
-    playAudio(15);
+    playAudio(mouseX / windowWidth);
     // Use this for debugging from the desktop!
 }
 
 function deviceMoved() {
-    movetimer = millis();
+    // movetimer = millis();
     statusLabels[2].style("color", "pink");
 }
 
@@ -82,7 +85,6 @@ function deviceTurned() {
 
 function deviceShaken() {
     shaketimer = millis();
-    statusLabels[0].style("color", "pink");
 
     // Calculate shake delta directly from p5.js built-in acceleration variables
     const dx = Math.abs(accelerationX - pAccelerationX);
@@ -90,7 +92,12 @@ function deviceShaken() {
     const dz = Math.abs(accelerationZ - pAccelerationZ);
     const shakeForce = Math.sqrt(dx * dx + dy * dy + dz * dz);
 
-    playAudio(shakeForce);
+    console.log("shakeforce ", shakeForce)
+    if (shaketimer - previousTime >= minTimeBetween) {
+        previousTime = shaketimer;
+        statusLabels[0].style("color", "pink");
+        playAudio(shakeForce);
+    }
 }
 
 
