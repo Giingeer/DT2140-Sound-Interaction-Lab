@@ -46,33 +46,33 @@ fire.createDSP(audioContext, 1024)
 //------------------------------------------------------------------------------------------
 //
 //==========================================================================================
-const minTimeBetween = 1000;
-let previousTime = 0;
-let wetTimeout = null;
+const flipThreshold = 135;
+let wasFlipped = false;
 
 function accelerationChange(accx, accy, accz) {
 }
 
 function rotationChange(rotx, roty, rotz) {
-    let now = millis();
-    // Flip threshold: > 135 degrees means the screen is facing downward
-    const flipThreshold = 135;
     const isFlipped = Math.abs(rotx) > flipThreshold || Math.abs(roty) > flipThreshold;
 
-    if (isFlipped) {
-        if (now - previousTime >= minTimeBetween) {
-            previousTime = now;
-            playAudio(1);
-            statusLabels[2].style("color", "pink");
-        }
-    } else {
+    // Ignite fire when flipped face-down
+    if (isFlipped && !wasFlipped) {
+        wasFlipped = true;
+        playAudio(true);
+        statusLabels[2].style("color", "pink");
+    } 
+    // Stop fire immediately when flipped back face-up
+    else if (!isFlipped && wasFlipped) {
+        wasFlipped = false;
+        playAudio(false);
         statusLabels[2].style("color", "black");
     }
 }
 
 function mousePressed() {
-    playAudio(1);
-    // Use this for debugging from the desktop!
+    // Toggle fire on/off when clicking on desktop for debugging
+    wasFlipped = !wasFlipped;
+    playAudio(wasFlipped);
 }
 
 function deviceMoved() {
@@ -105,7 +105,7 @@ function getMinMaxParam(address) {
 //
 //==========================================================================================
 
-function playAudio(isWet = 1) {
+function playAudio(active) {
     if (!dspNode) {
         return;
     }
@@ -113,21 +113,9 @@ function playAudio(isWet = 1) {
         return;
     }
 
-    // Ignite the fire, set volume (0 to 1), and turn on wet-wood crackling
-    dspNode.setParamValue("/fire/gate", 1);
-    dspNode.setParamValue("/fire/volume", 0.8);
-    dspNode.setParamValue("/fire/wet", isWet);
-
-    // Cancel any previous timer so rapid shakes/tilts don't cut the sound short
-    if (wetTimeout) {
-        clearTimeout(wetTimeout);
-    }
-
-    // Turn off wet crackling and close the fire gate after 1.5 seconds (1500 ms)
-    wetTimeout = setTimeout(() => {
-        dspNode.setParamValue("/fire/wet", 0);
-        dspNode.setParamValue("/fire/gate", 0);
-    }, 1500);
+    dspNode.setParamValue("/fire/gate", active ? 1 : 0);
+    dspNode.setParamValue("/fire/volume", active ? 0.8 : 0);
+    dspNode.setParamValue("/fire/wet", active ? 1 : 0);
 }
 //==========================================================================================
 // END
