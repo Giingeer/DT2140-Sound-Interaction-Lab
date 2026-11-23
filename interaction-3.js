@@ -85,7 +85,6 @@ function deviceTurned() {
 function deviceShaken() {
     shaketimer = millis();
     statusLabels[0].style("color", "pink");
-    playAudio(1);
 }
 
 function getMinMaxParam(address) {
