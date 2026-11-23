@@ -72,11 +72,11 @@ function rotationChange(rotx, roty, rotz) {
         prevTime = now;
         turntimer = now;
         if (currentTilt === -1)
-            statusLabels[0].style("color", "pink");
+            statusLabels[1].style("color", "pink");
         if (currentTilt === 1)
-            statusLabels[0].style("color", "red");
+            statusLabels[1].style("color", "red");
         else
-            statusLabels[0].style("color", "black");
+            statusLabels[1].style("color", "black");
         playAudio(currentTilt);
     }
     prevTilt = currentTilt;
