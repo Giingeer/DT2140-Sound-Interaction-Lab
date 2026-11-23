@@ -118,15 +118,15 @@ function playAudio(isWet = 1) {
         return;
     }
 
-    // Turn on wet-wood crackling/popping (1 = wet popping, 0 = steady dry fire)
+    // Replace these strings with the exact 3 parameter paths from params: Array(3)
+    // Always verify min/max with getMinMaxParam("/your/address") first!
+    dspNode.setParamValue("/fire/gain", 0.8);
     dspNode.setParamValue("/fire/wet", isWet);
 
-    // Cancel any previous timer so rapid shakes/tilts don't cut the popping short
     if (wetTimeout) {
         clearTimeout(wetTimeout);
     }
 
-    // Return to steady dry fire after 1.5 seconds (1500 ms)
     wetTimeout = setTimeout(() => {
         dspNode.setParamValue("/fire/wet", 0);
     }, 1500);
