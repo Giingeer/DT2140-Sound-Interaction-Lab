@@ -52,7 +52,7 @@ brass.createDSP(audioContext, 1024)
 //==========================================================================================
 
 const minTimeBetween = 1000;
-const margin = 1;
+const margin = sliders[2];
 let previousTime = 0;
 function accelerationChange(accx, accy, accz) {
     // playAudio()
@@ -65,6 +65,7 @@ function rotationChange(rotx, roty, rotz) {
         if(now - previousTime <= minTimeBetween){
             previousTime = now;
             playAudio()
+            statusLabels[2].style("color", "pink");
         }
 
     }
@@ -77,7 +78,7 @@ function mousePressed() {
 
 function deviceMoved() {
     movetimer = millis();
-    statusLabels[2].style("color", "pink");
+    // statusLabels[2].style("color", "pink");
 }
 
 function deviceTurned() {
