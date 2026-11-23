@@ -91,6 +91,8 @@ function deviceShaken() {
     const dz = Math.abs(accelerationZ - pAccelerationZ);
     const shakeForce = Math.sqrt(dx * dx + dy * dy + dz * dz);
 
+    console.log("shakeforce ", shakeForce)
+
     playAudio(shakeForce);
 }
 
