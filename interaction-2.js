@@ -95,14 +95,24 @@ function getMinMaxParam(address) {
 //
 //==========================================================================================
 
-function playAudio() {
+function playAudio(shakeForce = 15) {
     if (!dspNode) {
         return;
-    }
+  }
     if (audioContext.state === 'suspended') {
         return;
     }
-    dspNode.setParamValue("/englishBell/gate", 1)
+
+    // Map shake force (roughly 5 for light shake up to 35 for hard shake) to volume (0.1 to 1.0)
+    // p5.js constrain() and map() keep the volume safely within [0.1, 1.0]
+    const volume = constrain(map(shakeForce, 5, 35, 0.1, 1.0), 0.1, 1.0);
+
+    // Check your browser console's 'params:' log to verify whether bells.wasm uses
+    // "/englishBell/gain", "/englishBell/volume", or "/englishBell/strikeSharpness"
+    dspNode.setParamValue("/englishBell/gain", volume);
+
+    // Trigger the bell
+    dspNode.setParamValue("/englishBell/gate", 1);
     setTimeout(() => { dspNode.setParamValue("/englishBell/gate", 0) }, 100);
 }
 
