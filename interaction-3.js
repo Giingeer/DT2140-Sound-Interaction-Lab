@@ -66,6 +66,7 @@ function rotationChange(rotx, roty, rotz) {
             previousTime = now;
             playAudio()
             statusLabels[2].style("color", "pink");
+            movetimer = now;
         }
 
     }
@@ -77,7 +78,6 @@ function mousePressed() {
 }
 
 function deviceMoved() {
-    movetimer = millis();
     // statusLabels[2].style("color", "pink");
 }
 
