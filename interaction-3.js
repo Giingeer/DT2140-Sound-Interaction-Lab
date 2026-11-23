@@ -32,11 +32,7 @@ fire.createDSP(audioContext, 1024)
         console.log('params: ', dspNode.getParams());
         const jsonString = dspNode.getJSON();
         jsonParams = JSON.parse(jsonString)["ui"][0]["items"];
-        dspNodeParams = jsonParams
-        // const exampleMinMaxParam = findByAddress(dspNodeParams, "/thunder/rumble");
-        // // ALWAYS PAY ATTENTION TO MIN AND MAX, ELSE YOU MAY GET REALLY HIGH VOLUMES FROM YOUR SPEAKERS
-        // const [exampleMinValue, exampleMaxValue] = getParamMinMax(exampleMinMaxParam);
-        // console.log('Min value:', exampleMinValue, 'Max value:', exampleMaxValue);
+        dspNodeParams = jsonParams;
     });
 
 
@@ -50,54 +46,53 @@ fire.createDSP(audioContext, 1024)
 //------------------------------------------------------------------------------------------
 //
 //==========================================================================================
-
 const minTimeBetween = 1000;
 let previousTime = 0;
+let wetTimeout = null;
+
 function accelerationChange(accx, accy, accz) {
-    // playAudio()
 }
 
 function rotationChange(rotx, roty, rotz) {
-    let margin = sliders[2].value();
     let now = millis();
+    const margin = (typeof sliders !== "undefined" && sliders[2]) ? sliders[2].value() : 15;
     const totalXY = Math.abs(rotx) + Math.abs(roty);
 
-    if (totalXY < margin) {
+    if (totalXY > margin) {
         if (now - previousTime >= minTimeBetween) {
             previousTime = now;
-            playAudio();
+            playAudio(1);
             statusLabels[2].style("color", "pink");
-            movetimer = now;
         }
     } else {
-        statusLabels[2].style("color", "black"); 
+        statusLabels[2].style("color", "black");
     }
 }
 
 function mousePressed() {
-    playAudio(mouseX / windowWidth)
+    playAudio(1);
     // Use this for debugging from the desktop!
 }
 
 function deviceMoved() {
-    // statusLabels[2].style("color", "pink");
+    movetimer = millis();
 }
 
 function deviceTurned() {
     threshVals[1] = turnAxis;
 }
+
 function deviceShaken() {
     shaketimer = millis();
     statusLabels[0].style("color", "pink");
-    // playAudio();
+    playAudio(1);
 }
 
 function getMinMaxParam(address) {
     const exampleMinMaxParam = findByAddress(dspNodeParams, address);
-    // ALWAYS PAY ATTENTION TO MIN AND MAX, ELSE YOU MAY GET REALLY HIGH VOLUMES FROM YOUR SPEAKERS
     const [exampleMinValue, exampleMaxValue] = getParamMinMax(exampleMinMaxParam);
     console.log('Min value:', exampleMinValue, 'Max value:', exampleMaxValue);
-    return [exampleMinValue, exampleMaxValue]
+    return [exampleMinValue, exampleMaxValue];
 }
 
 //==========================================================================================
@@ -110,17 +105,29 @@ function getMinMaxParam(address) {
 //
 //==========================================================================================
 
-function playAudio(pressure = 0.5) {
+function playAudio(isWet = 1) {
     if (!dspNode) {
         return;
     }
     if (audioContext.state === 'suspended') {
         return;
     }
-    console.log(pressure);
-    // Replace "/fire/YOUR_PARAM" with the exact "address" from dsp-meta.json
-    // and ensure the value fits between its min and max
-    dspNode.setParamValue("/fire/fire_size", pressure);
+
+    // Ignite the fire, set volume (0 to 1), and turn on wet-wood crackling
+    dspNode.setParamValue("/fire/gate", 1);
+    dspNode.setParamValue("/fire/volume", 0.8);
+    dspNode.setParamValue("/fire/wet", isWet);
+
+    // Cancel any previous timer so rapid shakes/tilts don't cut the sound short
+    if (wetTimeout) {
+        clearTimeout(wetTimeout);
+    }
+
+    // Turn off wet crackling and close the fire gate after 1.5 seconds (1500 ms)
+    wetTimeout = setTimeout(() => {
+        dspNode.setParamValue("/fire/wet", 0);
+        dspNode.setParamValue("/fire/gate", 0);
+    }, 1500);
 }
 //==========================================================================================
 // END
