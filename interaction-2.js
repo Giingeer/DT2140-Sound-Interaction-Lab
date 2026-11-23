@@ -67,6 +67,20 @@ function accelerationChange(accx, accy, accz) {
 }
 
 function rotationChange(rotx, roty, rotz) {
+    let margin = sliders[2].value();
+    let now = millis();
+    const totalXY = Math.abs(rotx) + Math.abs(roty);
+
+    if (totalXY < margin) {
+        if (now - previousTime >= minTimeBetween) {
+            previousTime = now;
+            // playAudio();
+            statusLabels[2].style("color", "pink");
+            movetimer = now;
+        }
+    } else {
+        statusLabels[2].style("color", "black"); 
+    }
 }
 
 function mousePressed() {
