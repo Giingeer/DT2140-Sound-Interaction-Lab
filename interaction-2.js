@@ -113,7 +113,7 @@ function playAudio(shakeForce = 15) {
 
     // Trigger the bell
     dspNode.setParamValue("/englishBell/gate", 1);
-    setTimeout(() => { dspNode.setParamValue("/englishBell/gate", 0) }, 100);
+    setTimeout(() => { dspNode.setParamValue("/englishBell/gate", 0) }, 1000);
 }
 
 //==========================================================================================
