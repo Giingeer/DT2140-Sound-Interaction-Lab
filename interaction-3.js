@@ -56,8 +56,11 @@ const margin = 1;
 let previousTime = 0;
 function accelerationChange(accx, accy, accz) {
     // playAudio()
+}
+
+function rotationChange(rotx, roty, rotz) {
     let now = millis()
-    const totalXY = Math.abs(accx) + Math.abs(accy)
+    const totalXY = Math.abs(rotx) + Math.abs(roty)
     if(totalXY < margin){
         if(now - previousTime <= minTimeBetween){
             previousTime = now;
@@ -65,9 +68,6 @@ function accelerationChange(accx, accy, accz) {
         }
 
     }
-}
-
-function rotationChange(rotx, roty, rotz) {
 }
 
 function mousePressed() {
