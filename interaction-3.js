@@ -61,6 +61,9 @@ function rotationChange(rotx, roty, rotz) {
     let margin = sliders[2].value();
     let now = millis()
     const totalXY = Math.abs(rotx) + Math.abs(roty)
+    console.log("totalXY = ", totalXY)
+    console.log("rotX = ", rotx)
+    console.log("roty = ", roty)
     if(totalXY < margin){
         if(now - previousTime <= minTimeBetween){
             previousTime = now;
