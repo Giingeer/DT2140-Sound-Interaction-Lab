@@ -55,10 +55,11 @@ function accelerationChange(accx, accy, accz) {
 
 function rotationChange(rotx, roty, rotz) {
     let now = millis();
-    const margin = (typeof sliders !== "undefined" && sliders[2]) ? sliders[2].value() : 15;
-    const totalXY = Math.abs(rotx) + Math.abs(roty);
+    // Flip threshold: > 135 degrees means the screen is facing downward
+    const flipThreshold = 135;
+    const isFlipped = Math.abs(rotx) > flipThreshold || Math.abs(roty) > flipThreshold;
 
-    if (totalXY > margin) {
+    if (isFlipped) {
         if (now - previousTime >= minTimeBetween) {
             previousTime = now;
             playAudio(1);
