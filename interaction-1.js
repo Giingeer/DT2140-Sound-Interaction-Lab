@@ -73,7 +73,7 @@ function rotationChange(rotx, roty, rotz) {
         turntimer = now;
         if (currentTilt === -1)
             statusLabels[1].style("color", "pink");
-        if (currentTilt === 1)
+        else if (currentTilt === 1)
             statusLabels[1].style("color", "red");
         else
             statusLabels[1].style("color", "black");
