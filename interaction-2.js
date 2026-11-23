@@ -56,6 +56,8 @@ bells.createDSP(audioContext, 1024)
 //==========================================================================================
 
 let maxShakeForce = 0;
+const minTimeBetween = 300;
+let previousTime = 0;
 
 function accelerationChange(accx, accy, accz) {
     const totalForce = Math.sqrt(accx * accx + accy * accy + accz * accz);
@@ -83,7 +85,6 @@ function deviceTurned() {
 
 function deviceShaken() {
     shaketimer = millis();
-    statusLabels[0].style("color", "pink");
 
     // Calculate shake delta directly from p5.js built-in acceleration variables
     const dx = Math.abs(accelerationX - pAccelerationX);
@@ -92,8 +93,11 @@ function deviceShaken() {
     const shakeForce = Math.sqrt(dx * dx + dy * dy + dz * dz);
 
     console.log("shakeforce ", shakeForce)
-
-    playAudio(shakeForce);
+    if (shaketimer - previousTime >= minTimeBetween) {
+        previousTime = shaketimer;
+        statusLabels[0].style("color", "pink");
+        playAudio(shakeForce);
+    }
 }
 
 
