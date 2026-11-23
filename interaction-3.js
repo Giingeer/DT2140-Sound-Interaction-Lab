@@ -52,13 +52,13 @@ fire.createDSP(audioContext, 1024)
 //==========================================================================================
 
 const minTimeBetween = 1000;
-const margin = sliders[2].value();
 let previousTime = 0;
 function accelerationChange(accx, accy, accz) {
     // playAudio()
 }
 
 function rotationChange(rotx, roty, rotz) {
+    let margin = sliders[2].value();
     let now = millis()
     const totalXY = Math.abs(rotx) + Math.abs(roty)
     if(totalXY < margin){
